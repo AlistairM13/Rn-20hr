@@ -16,11 +16,22 @@ router.post('/',
             .isEmpty(),
     ], skillsController.createSkill)
 
-// router.get('/:sid', skillsController.getSkillById)
+// router.get('/:sid', skillsController.getSkillById) // Bringing in Time Series data
 
-// router.patch('/:sid', skillsController.updateSkill)
+router.patch('/:sid',
+    [
+        check('name')
+            .not()
+            .isEmpty(),
+        check('goal')
+            .not()
+            .isEmpty(),
+        check('timeInvested')
+            .not()
+            .isEmpty()
+    ], skillsController.updateSkill)
 
-// router.delete('/:sid', skillsController.deleteSkill)
+router.delete('/:sid', skillsController.deleteSkill)
 
 router.get('/users/:uid', skillsController.getSkillsByUser)
 
