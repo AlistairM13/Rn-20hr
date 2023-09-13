@@ -53,7 +53,6 @@ const createSkill = async (req, res, next) => {
         sess.startTransaction()
         await createdSkill.save({ session: sess })
         user.skills.push(createdSkill)
-        user.totalSkills += 1
         await user.save({ session: sess })
         await sess.commitTransaction()
     } catch (err) {
@@ -103,7 +102,7 @@ const updateSkill = async (req, res, next) => {
     let skill
     try {
         skill = await Skill.findById(skillId)
-        const existingName = await Skill.findOne({ name: updatedSkill.name })
+        const existingName = await Skill.findOne({ name: updateSkill.name, _id: { $ne: skillId } })
         if (existingName) {
             return next(new HttpError('Skill by the same name already exists', 400));
         }
@@ -134,9 +133,9 @@ const updateSkill = async (req, res, next) => {
 
     skill.name = updatedSkill.name ?? skill.name
     skill.goal = updatedSkill.goal ?? skill.goal
-    skill.timeInvested += updatedSkill.timeThisSession ?? 0
+    skill.timeInvested += updatedSkill.sessionDuration ?? 0
 
-    user.totalTimeInvested += updatedSkill.timeThisSession ?? 0
+    user.totalTimeInvested += updatedSkill.sessionDuration ?? 0
 
     try {
         await skill.save()
@@ -163,17 +162,6 @@ const deleteSkill = async (req, res, next) => {
     }
     if (!skill) return next(new HttpError('No skill was found with the given ID', 404));
 
-    let user;
-    try {
-        user = await User.findById(userId);
-    } catch (err) {
-        return next(new HttpError('Deleting skill failed, try again later', 500));
-    }
-    if (!user) {
-        const error = new HttpError('Could not find user for provided id.', 404);
-        return next(error);
-    }
-
     if (skill.createdBy.id !== userId) return next(new HttpError('You are not allowed to delete this skill', 403));
 
     try {
@@ -181,8 +169,6 @@ const deleteSkill = async (req, res, next) => {
         sess.startTransaction()
         await Skill.deleteOne(skill, { session: sess })
         skill.createdBy.skills.pull(skill)
-        user.totalSkills -= 1
-        await user.save({ session: sess })
         await skill.createdBy.save({ session: sess })
         await sess.commitTransaction()
     } catch (err) {
@@ -192,7 +178,6 @@ const deleteSkill = async (req, res, next) => {
 
     res.json({ message: "Skill deleted" })
 }
-
 
 exports.createSkill = createSkill
 exports.getSkillsByUser = getSkillsByUser

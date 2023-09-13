@@ -26,7 +26,7 @@ router.patch('/:sid',
         check('goal')
             .not()
             .isEmpty(),
-        check('timeInvested')
+        check('sessionDuration')
             .not()
             .isEmpty()
     ], skillsController.updateSkill)
