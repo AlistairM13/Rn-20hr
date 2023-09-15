@@ -19,6 +19,22 @@ const getUsers = async (req, res, next) => {
     res.json({ users: users.map(user => user.toObject({ getters: true, virtuals: true })) });
 };
 
+const getUserById = async (req, res, next) => {
+    const userId = req.params.uid
+    let user
+    try {
+        user = await User.findById(userId, '-password').populate('skills')
+    } catch (err) {
+        return next(new HttpError("Could not fetch user details, try again later", 500))
+    }
+
+    if (!user) {
+        return next(new HttpError("Could not find a user with that ID", 404))
+    }
+
+    res.json({ user: user.toObject({ virtuals: true, getters: true }) })
+}
+
 const signup = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -80,7 +96,7 @@ const signup = async (req, res, next) => {
     try {
         token = jwt.sign(
             { userId: createdUser.id, email: createdUser.email },
-            'supersecret_dont_share',
+            process.env.JWT_KEY,
             { expiresIn: '1h' }
         );
     } catch (err) {
@@ -142,8 +158,8 @@ const login = async (req, res, next) => {
     try {
         token = jwt.sign(
             { userId: existingUser.id, email: existingUser.email },
-            'supersecret_dont_share',
-            { expiresIn: '1h' }
+            process.env.JWT_KEY,
+            { expiresIn: '1hr' }
         );
     } catch (err) {
         const error = new HttpError(
@@ -258,14 +274,49 @@ const getGlobalLeaderBoard = async (req, res, next) => {
     try {
         users = await User.find({}, '-password').sort({ totalTimeInvested: -1 }).limit(10)
     } catch (err) {
-        return new HttpError("Could not fetch the leaderboards", 500)
+        return next(new HttpError("Could not fetch the leaderboards", 500))
     }
-    res.json({ users: users.map(user => user.toObject({ getters: true, virtuals: true })) });
+    res.json({
+        users: users
+            .map(user => user.toObject({ getters: true, virtuals: true }))
+            .map(user => ({ id: user.id, name: user.name, skillCount: user.skillCount, totalTimeInvested: user.totalTimeInvested }))
+    });
+}
+
+const getLocalLeaderboard = async (req, res, next) => {
+    const userId = req.userData.userId
+    let user
+    try {
+        user = await User.findById(userId).populate('following')
+    } catch (err) {
+        return next(new HttpError("Could not fetch the local leaderboards", 500))
+    }
+    if (!user) {
+        return next(new HttpError("User not found", 500))
+    }
+    const localLeaderboard = [user]
+
+    if (user.following && user.following.length > 0) {
+        localLeaderboard.push(...user.following);
+    }
+    localLeaderboard.sort((first, second) => {
+        if (first.totalTimeInvested > second.totalTimeInvested) return -1
+        if (first.totalTimeInvested < second.totalTimeInvested) return 1
+        return 1
+    })
+    const users = localLeaderboard
+        .map(user => user.toObject({ getters: true, virtuals: true }))
+        .map(user => ({ id: user.id, name: user.name, skillCount: user.skillCount, totalTimeInvested: user.totalTimeInvested }))
+        .filter((_, idx) => idx < 10)
+
+    res.json({ users: users })
 }
 
 exports.signup = signup;
 exports.login = login;
 exports.getUsers = getUsers
+exports.getUserById = getUserById
 exports.followUser = followUser
 exports.unfollowUser = unfollowUser
 exports.getGlobalLeaderBoard = getGlobalLeaderBoard
+exports.getLocalLeaderboard = getLocalLeaderboard

@@ -4,6 +4,7 @@ const userRouter = require('./routes/users-router')
 const mongoose = require('mongoose')
 const app = express()
 const HttpError = require('./models/http-error')
+require('dotenv').config()
 
 app.use(express.json())
 
@@ -14,7 +15,6 @@ app.use((req, res, next) => {
         'Origin, X-Requested-With, Content-Type, Accept, Authorization'
     );
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
-
     next();
 });
 
@@ -33,7 +33,7 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    "mongodb+srv://Alistair:l70uc1YBSA9sZchW@cluster0.ajs1ajv.mongodb.net/The20HrRule?retryWrites=true&w=majority"
+    process.env.DB_URL
   )
   .then(() => {
     console.log("server started")

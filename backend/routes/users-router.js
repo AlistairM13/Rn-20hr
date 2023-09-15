@@ -5,7 +5,7 @@ const userController = require('../controllers/users-controller')
 const checkAuth = require('../middleware/check-auth')
 
 router.get('/', userController.getUsers)
-// router.post('/:uid', userController.getUserById)
+router.get('/:uid', userController.getUserById)
 
 router.post(
   '/signup',
@@ -27,6 +27,7 @@ router.use(checkAuth)
 
 router.post('/:uid/follow', userController.followUser)
 router.delete('/:uid/unfollow', userController.unfollowUser)
-router.get('/leaderboard', userController.getGlobalLeaderBoard)
+router.get('/leaderboards/global', userController.getGlobalLeaderBoard)
+router.get('/leaderboards/local', userController.getLocalLeaderboard)
 
 module.exports = router
