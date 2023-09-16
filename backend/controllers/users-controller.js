@@ -113,6 +113,7 @@ const signup = async (req, res, next) => {
 };
 
 const login = async (req, res, next) => {
+
     const { email, password } = req.body;
 
     let existingUser;
@@ -120,6 +121,7 @@ const login = async (req, res, next) => {
     try {
         existingUser = await User.findOne({ email: email });
     } catch (err) {
+        console.log("findone", err)
         const error = new HttpError(
             'Logging in failed, please try again later.',
             500
@@ -132,6 +134,7 @@ const login = async (req, res, next) => {
             'Invalid credentials, could not log you in.',
             403
         );
+        console.log("user exists", existingUser)
         return next(error);
     }
 
@@ -143,6 +146,7 @@ const login = async (req, res, next) => {
             'Could not log you in, please check your credentials and try again.',
             500
         );
+        console.log("Pass", err)
         return next(error);
     }
 
@@ -151,6 +155,7 @@ const login = async (req, res, next) => {
             'Invalid credentials, could not log you in.',
             403
         );
+        console.log("invalid pass", existingUser, isValidPassword)
         return next(error);
     }
 
@@ -166,6 +171,7 @@ const login = async (req, res, next) => {
             'Logging in failed, please try again later.',
             500
         );
+        console.log("invalid token", err)
         return next(error);
     }
 

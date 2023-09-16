@@ -11,7 +11,6 @@ const useAppStore = create()(persist((set, get) => ({
         if (token) {
             const decodedToken = jwtDecode(token)
             const tokenHasExpired = decodedToken.exp < Date.now() / 1000
-            console.log(decodedToken.exp, Date.now() / 1000, decodedToken.exp < Date.now() / 1000)
             if (tokenHasExpired) {
                 set({ TOKEN: null })
                 return null

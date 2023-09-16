@@ -1,11 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-export default function Home({ navigation }) {
-
+export default function LeaderBoards() {
   return (
     <View>
-      <Text>hey</Text>
+      <Text>LeaderBoards</Text>
     </View>
   )
 }
