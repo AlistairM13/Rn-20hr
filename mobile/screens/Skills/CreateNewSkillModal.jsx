@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { KeyboardAvoidingView, Pressable, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native'
 import { useState } from 'react'
 import { z } from 'zod'
 
@@ -32,24 +32,33 @@ export default function CreateNewSkillScreen({ navigation }) {
         }
     }
     return (
-        <View style={styles.modalContent} >
-            <Pressable onPress={navigation.goBack} style={{ position: 'absolute', height: "100%", width: "100%", backgroundColor: "rgba(0,0,0,0.8)" }} />
-            <TextInput style={styles.textInput} placeholder="Name of the skill" value={skillInfo.name} onChangeText={text => updateSkillInfo("name", text)} />
-            {errors.name && <Text>{errors.name}</Text>}
-            <TextInput style={styles.textInput} placeholder="Enter your goal" value={skillInfo.goal} onChangeText={text => updateSkillInfo("goal", text)} />
-            {errors.goal && <Text>{errors.goal}</Text>}
-            <TouchableOpacity style={styles.button} onPress={createSkill}>
-                <Text>Create Skill</Text>
-            </TouchableOpacity>
-        </View>
+        <Pressable style={styles.modalContainer} onPress={navigation.goBack}  >
+            <KeyboardAvoidingView style={styles.modalContent}>
+                <Text>Create New Skill</Text>
+                <TextInput style={styles.textInput} placeholder="Name of the skill" value={skillInfo.name} onChangeText={text => updateSkillInfo("name", text)} />
+                {errors.name && <Text>{errors.name}</Text>}
+                <TextInput style={styles.textInput} placeholder="Enter your goal" value={skillInfo.goal} onChangeText={text => updateSkillInfo("goal", text)} />
+                {errors.goal && <Text>{errors.goal}</Text>}
+                <TouchableOpacity style={styles.button} onPress={createSkill}>
+                    <Text>Create Skill</Text>
+                </TouchableOpacity>
+            </KeyboardAvoidingView>
+        </Pressable>
     )
 }
 
 const styles = StyleSheet.create({
-    modalContent: {
+    modalContainer: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center"
+        justifyContent: "flex-end",
+        backgroundColor: "transparent",
+    },
+    modalContent: {
+        paddingVertical: 20,
+        alignItems: "center",
+        backgroundColor: "#000",
+        borderTopEndRadius: 50,
+        borderTopStartRadius: 50,
     },
     textInput: {
         width: "70%",

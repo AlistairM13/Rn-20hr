@@ -12,7 +12,7 @@ export default function Skills({ navigation }) {
       <Stack.Navigator screenOptions={{headerShown:false}}>
         <Stack.Screen name='AllSkills' component={AllSkillScreen} />
         <Stack.Screen name='SkillDetailScreen' component={SkillDetailsScreen} />
-        <Stack.Screen name='CreateNewSkill' component={CreateNewSkill}  options={{presentation:"containedTransparentModal"}}/>
+        <Stack.Screen name='CreateNewSkill' component={CreateNewSkill}  options={{presentation:"transparentModal",animation:'slide_from_bottom'}}/>
       </Stack.Navigator>
   )
 

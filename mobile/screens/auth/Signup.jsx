@@ -42,11 +42,11 @@ export default function Signup({ navigation }) {
   return (
     <View style={{ padding: 8 }}>
       <TextInput style={styles.textInput} placeholder="Enter your name" value={signupData.name} onChangeText={text => updateForm("name", text)} />
-      {errors.name && <Text>{errors.name}</Text>}
+      {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
       <TextInput style={styles.textInput} placeholder="Enter your email" value={signupData.email} onChangeText={text => updateForm("email", text)} />
-      {errors.email && <Text>{errors.email}</Text>}
+      {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
       <TextInput style={styles.textInput} placeholder="Enter your password" value={signupData.password} onChangeText={text => updateForm("password", text)} />
-      {errors.password && <Text>{errors.password}</Text>}
+      {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
       <Text style={{ paddingVertical: 16 }} onPress={() => navigation.replace('Login')}>Already have an account? <Text style={{ fontSize: 16, fontWeight: "600" }}>Login!</Text></Text>
       <Button title='Signup' onPress={signup} />
     </View>
@@ -60,5 +60,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginTop: 10
+  },
+  errorText:{
+    color:"#FF6263"
   }
 })
