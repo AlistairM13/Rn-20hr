@@ -7,7 +7,6 @@ const skillSchema = z.object({
     goal: z.string().nonempty("What do you wish to finish by 20 hours").max(30, "Maximum of 30 characters allowed"),
 })
 
-
 export default function CreateNewSkillScreen({ navigation }) {
     const [skillInfo, setSkillInfo] = useState({ name: "", goal: "" })
     const [errors, setErrors] = useState({})
@@ -17,6 +16,7 @@ export default function CreateNewSkillScreen({ navigation }) {
     function createSkill() {
         try {
             skillSchema.parse(skillInfo)
+            navigation.pop() // This is why bottom sheet is needed
             navigation.navigate("SkillDetailScreen")
         } catch (err) {
             if (err.formErrors) {
@@ -77,6 +77,5 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginTop: 16
     }
-
 })
 

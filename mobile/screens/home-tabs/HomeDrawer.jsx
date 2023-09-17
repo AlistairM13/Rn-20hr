@@ -1,9 +1,6 @@
 import { StyleSheet, View, Text } from 'react-native'
-import { NavigationContainer } from '@react-navigation/native'
-
-import LeaderBoards from './LeaderBoardsTab';
-import Icon from 'react-native-vector-icons/Ionicons';
-import Skills from './SkillsTab';
+import LeaderBoards from './LeaderBoards';
+import Skills from './SkillsStackScreen';
 import {
   createDrawerNavigator,
   DrawerItemList,
@@ -14,10 +11,10 @@ import {
 const Drawer = createDrawerNavigator();
 
 export default function Home() {
-
   return (
     <Drawer.Navigator
-      drawerContent={(props) => <CustomDrawerContent {...props} />}>
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+    >
       <Drawer.Screen name="Skills" component={Skills} />
       <Drawer.Screen name="Leaderboards" component={LeaderBoards} />
     </Drawer.Navigator>
@@ -27,11 +24,11 @@ export default function Home() {
 
 function CustomDrawerContent(props) {
   return (
-    <DrawerContentScrollView contentContainerStyle={{flex:1, justifyContent:"space-between"}} {...props}>
+    <DrawerContentScrollView contentContainerStyle={{ flex: 1, justifyContent: "space-between" }} {...props}>
       <View>
-      <DrawerItemList {...props} />
+        <DrawerItemList {...props} />
       </View>
-      <DrawerItem label="Dark Mode" style={{marginBottom:10}} onPress={() => alert('Link to help')} />
+      <DrawerItem label="Dark Mode" style={{ marginBottom: 10 }} onPress={() => alert('Link to help')} />
     </DrawerContentScrollView>
   );
 }

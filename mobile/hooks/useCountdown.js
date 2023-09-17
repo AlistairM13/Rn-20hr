@@ -11,9 +11,12 @@ export default function useCountdown() {
         return () => clearTimeout(timeOut)
     }, [secondsLeft])
 
-    function start(seconds) {
+    function startCountdown(seconds) {
         setSecondsLeft(seconds)
     }
+    function stopCountdown(){
+        setSecondsLeft(0)
+    }
 
-    return { secondsLeft, start }
+    return { secondsLeft, startCountdown, stopCountdown }
 }
