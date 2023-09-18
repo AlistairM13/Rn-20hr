@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { zustandStorage } from './mmkv';
 import jwtDecode from 'jwt-decode'
 
+// Split the store
 const useAppStore = create()(persist((set, get) => ({
     TOKEN: null, // Do not alter directly
     setToken: (newToken) => set({ TOKEN: newToken }),
@@ -21,6 +22,22 @@ const useAppStore = create()(persist((set, get) => ({
         return null
     },
     removeToken: () => set({ TOKEN: null }),
+    timeStarted: null,
+    durationInSecs: null,
+    setTimeStarted: (newTime, durationInSecs) => {
+        console.log("Set",newTime, durationInSecs)
+        set({ timeStarted: newTime, durationInSecs: durationInSecs })
+    },
+    getSecsLeft: () => {
+        const timeStarted = get().timeStarted
+        const durationInSecs = get().durationInSecs
+        console.log("get",timeStarted, durationInSecs)
+        if(timeStarted!==null && durationInSecs!==null){
+            const timeLeft = parseInt(timeStarted/1000) + durationInSecs - parseInt(Date.now() /1000)
+            return timeLeft
+        }
+        return 0
+    },
     darkMode: false,
     toggleDarkMode: () => set(state => ({ darkMode: !state.darkMode })),
 }), {

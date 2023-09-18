@@ -2,11 +2,14 @@ import { Alert, Button, Keyboard, StyleSheet, Text, TextInput, View } from 'reac
 import React, { useState, useEffect } from 'react'
 import useCountdown from '../../hooks/useCountdown'
 import { formatDuration } from '../../helpers/helpers'
+import useAppStore from '../../store/appStore'
 
 export default function SkillDetailsScreen({ navigation }) {
+  const { setTimeStarted, getSecsLeft, durationInSecs, timeStarted } = useAppStore()
   const { secondsLeft, startCountdown, stopCountdown } = useCountdown()
   const [startTime, setStartTime] = useState()
   const [error, setError] = useState()
+  const [congrats, setCongrats] = useState(false)
 
   function startTimer() {
     const trimmed = startTime.trim()
@@ -15,9 +18,9 @@ export default function SkillDetailsScreen({ navigation }) {
       setError("Please enter a valid duration in minutes")
       return
     }
-
     Keyboard.dismiss()
     const timeInSec = +startTime * 60
+    setTimeStarted(Date.now(), timeInSec)
     startCountdown(timeInSec)
   }
 
@@ -28,6 +31,7 @@ export default function SkillDetailsScreen({ navigation }) {
 
   function updateTime(text) {
     setError()
+    setCongrats(false)
     setStartTime(text)
   }
 
@@ -46,8 +50,24 @@ export default function SkillDetailsScreen({ navigation }) {
     );
   }
 
+  function saveSession() {
+    console.log("save")
+  }
+
+  useEffect(() => {
+    const secondsLeft = getSecsLeft()
+    if (secondsLeft <= 0) {
+      setTimeStarted(null, null)
+      return
+    }
+    setTimeStarted(timeStarted, durationInSecs)
+    setStartTime("" + parseInt(durationInSecs / 60))
+    startCountdown(secondsLeft)
+  }, [])
+
   useEffect(() => {
     if (secondsLeft === 0) {
+      setCongrats(true)
       return;
     }
     navigation.addListener('beforeRemove', preventReturn)
@@ -61,6 +81,8 @@ export default function SkillDetailsScreen({ navigation }) {
       {error && <Text style={styles.errorText}>{error}</Text>}
       {startTime && secondsLeft == 0 && <Button title='Start' onPress={startTimer} />}
       {secondsLeft > 0 && <Button title='Stop' onPress={stopTimer} />}
+      {congrats && <Text style={{ color: "black" }}>Congrats!</Text>}
+      {congrats && <Button title='Save session' onPress={saveSession} />}
     </View>
   )
 }
