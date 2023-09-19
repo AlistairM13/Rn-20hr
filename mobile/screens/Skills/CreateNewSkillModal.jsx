@@ -1,23 +1,33 @@
 import { KeyboardAvoidingView, Pressable, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native'
 import { useState } from 'react'
+import { createSkillAPI } from '../../api/api'
 import { z } from 'zod'
+import useAppStore from '../../store/appStore'
+import { COLORS } from '../../constants/styles'
 
 const skillSchema = z.object({
     name: z.string().nonempty().max(15, "Maximum of 15 characters allowed"),
     goal: z.string().nonempty("What do you wish to finish by 20 hours").max(30, "Maximum of 30 characters allowed"),
 })
 
-export default function CreateNewSkillScreen({ navigation }) {
+export default function CreateNewSkillScreen({ navigation, route }) {
+    const { getToken } = useAppStore()
     const [skillInfo, setSkillInfo] = useState({ name: "", goal: "" })
     const [errors, setErrors] = useState({})
+
     function updateSkillInfo(fieldName, text) {
         setSkillInfo(prev => ({ ...prev, [fieldName]: text }))
     }
-    function createSkill() {
+    async function createSkill() {
         try {
             skillSchema.parse(skillInfo)
-            navigation.pop() // This is why bottom sheet is needed
-            navigation.navigate("SkillDetailScreen")
+            const token = getToken()
+            if (!token) return navigation.replace('login') // really bad UX
+            const response = await createSkillAPI(skillInfo.name, skillInfo.goal, token)
+            if (response) {
+                navigation.pop() // This is why bottom sheet is needed
+                navigation.navigate("SkillDetailScreen", { skill: response.skill })
+            }
         } catch (err) {
             if (err.formErrors) {
                 const fieldErrors = {};
@@ -40,7 +50,7 @@ export default function CreateNewSkillScreen({ navigation }) {
                 <TextInput style={styles.textInput} placeholder="Enter your goal" value={skillInfo.goal} onChangeText={text => updateSkillInfo("goal", text)} />
                 {errors.goal && <Text>{errors.goal}</Text>}
                 <TouchableOpacity style={styles.button} onPress={createSkill}>
-                    <Text>Create Skill</Text>
+                    <Text style={{ color: "black" }}>Create Skill</Text>
                 </TouchableOpacity>
             </KeyboardAvoidingView>
         </Pressable>
@@ -51,12 +61,11 @@ const styles = StyleSheet.create({
     modalContainer: {
         flex: 1,
         justifyContent: "flex-end",
-        backgroundColor: "transparent",
     },
     modalContent: {
         paddingVertical: 20,
         alignItems: "center",
-        backgroundColor: "#000",
+        backgroundColor: COLORS.blue,
         borderTopEndRadius: 50,
         borderTopStartRadius: 50,
     },
@@ -73,7 +82,7 @@ const styles = StyleSheet.create({
         width: "70%",
         alignItems: "center",
         paddingVertical: 8,
-        backgroundColor: "#ccc",
+        backgroundColor: COLORS.green,
         borderRadius: 8,
         marginTop: 16
     }

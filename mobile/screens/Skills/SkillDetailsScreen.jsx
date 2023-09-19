@@ -1,11 +1,13 @@
 import { Alert, Button, Keyboard, StyleSheet, Text, TextInput, View } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useLayoutEffect } from 'react'
 import useCountdown from '../../hooks/useCountdown'
 import { formatDuration } from '../../helpers/helpers'
 import useAppStore from '../../store/appStore'
+import { updateSkillAPI } from '../../api/api'
 
-export default function SkillDetailsScreen({ navigation }) {
-  const { setTimeStarted, getSecsLeft, durationInSecs, timeStarted } = useAppStore()
+export default function SkillDetailsScreen({ navigation, route }) {
+  const currentSkill = route.params.skill
+  const { setTimeStarted, getSecsLeft, durationInSecs, timeStarted, getToken } = useAppStore()
   const { secondsLeft, startCountdown, stopCountdown } = useCountdown()
   const [startTime, setStartTime] = useState()
   const [error, setError] = useState()
@@ -31,7 +33,7 @@ export default function SkillDetailsScreen({ navigation }) {
 
   function updateTime(text) {
     setError()
-    setCongrats(false)
+    // setCongrats(false)
     setStartTime(text)
   }
 
@@ -44,17 +46,34 @@ export default function SkillDetailsScreen({ navigation }) {
         { text: "Don't leave", style: 'cancel', onPress: () => { } },
         {
           text: 'Discard', style: 'destructive',
-          onPress: () => navigation.dispatch(e.data.action),
+          onPress: () => {
+            stopTimer()
+            navigation.dispatch(e.data.action)
+          }
         },
       ]
     );
   }
 
-  function saveSession() {
-    console.log("save")
+  async function saveSession() {
+    console.log(currentSkill)
+    Alert.alert(
+      "Session complete", "",
+      [{
+        text: "Save session", onPress: () => {
+          const token = getToken()
+          if (!token) return navigation.replace('Login')
+          const response = updateSkillAPI(currentSkill._id, currentSkill.name, currentSkill.goal, durationInSecs / 3600, token)
+          if (response != null) {
+            navigation.pop()
+          }
+        }
+      }]
+    )
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: currentSkill.name })
     const secondsLeft = getSecsLeft()
     if (secondsLeft <= 0) {
       setTimeStarted(null, null)
@@ -67,7 +86,10 @@ export default function SkillDetailsScreen({ navigation }) {
 
   useEffect(() => {
     if (secondsLeft === 0) {
-      setCongrats(true)
+      if (timeStarted && durationInSecs && Date.now() > (timeStarted + durationInSecs * 1000)) {
+        saveSession()
+      }
+      setTimeStarted(null, null)
       return;
     }
     navigation.addListener('beforeRemove', preventReturn)
