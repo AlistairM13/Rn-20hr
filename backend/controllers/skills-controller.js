@@ -169,6 +169,7 @@ const deleteSkill = async (req, res, next) => {
         sess.startTransaction()
         await Skill.deleteOne(skill, { session: sess })
         skill.createdBy.skills.pull(skill)
+        skill.createdBy.totalTimeInvested -= skill.timeInvested
         await skill.createdBy.save({ session: sess })
         await sess.commitTransaction()
     } catch (err) {

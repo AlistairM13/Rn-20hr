@@ -1,4 +1,4 @@
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
+import { TouchableOpacity, ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { useCallback, useEffect, useState } from 'react'
 import { COLORS } from '../../constants/styles'
 import { FlatList, RefreshControl } from 'react-native-gesture-handler'
@@ -38,6 +38,14 @@ export default function LocalLeaderboards({ navigation }) {
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={fetchLocalLeaderboards} />
         }
+        ListHeaderComponent={() => <View style={{ flexDirection: 'row', padding:8 }}>
+          <Text style={{ color: "black", marginRight:8 }}>Rank</Text>
+          <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'space-between' }}>
+            <Text style={{ color: "black" }}>Player</Text>
+            <Text style={{ color: "black" }}>Time Invested</Text>
+          </View >
+        </View>}
+        ItemSeparatorComponent={() => < View style={{ height: 8 }} />}
         contentContainerStyle={{ padding: 8, paddingTop: 16 }}
         keyExtractor={(item) => item.id}
         renderItem={({ item, index }) =>

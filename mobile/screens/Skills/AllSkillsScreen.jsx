@@ -19,7 +19,6 @@ export default function AllSkillScreen({ navigation }) {
         const token = getToken()
         if (!token) return navigation.replace('Login')
         const newSkills = (await getAllSkillsAPI(token, USER_ID)).skills
-        console.log(newSkills, "here")
         setSkills([{}, ...newSkills])
     }
     async function deleteSkill(skill) {

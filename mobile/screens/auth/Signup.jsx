@@ -24,7 +24,8 @@ export default function Signup({ navigation }) {
     try {
       signupSchema.parse(signupData)
       const signupResponse = await signupUser({ ...signupData })
-      setToken(signupResponse.token)
+      const token = "Bearer " + signupResponse.token
+      setToken(token)
       navigation.replace('Home')
     } catch (err) {
       if (z.instanceof(err)) {
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 10
   },
-  errorText:{
-    color:"#FF6263"
+  errorText: {
+    color: "#FF6263"
   }
 })
