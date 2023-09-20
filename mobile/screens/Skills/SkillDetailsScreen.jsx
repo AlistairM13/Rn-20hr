@@ -4,6 +4,7 @@ import useCountdown from '../../hooks/useCountdown'
 import { formatDuration } from '../../helpers/helpers'
 import useAppStore from '../../store/appStore'
 import { updateSkillAPI } from '../../api/api'
+import { COLORS } from '../../constants/styles'
 
 export default function SkillDetailsScreen({ navigation, route }) {
   const currentSkill = route.params.skill
@@ -56,14 +57,13 @@ export default function SkillDetailsScreen({ navigation, route }) {
   }
 
   async function saveSession() {
-    console.log(currentSkill)
     Alert.alert(
       "Session complete", "",
       [{
-        text: "Save session", onPress: () => {
+        text: "Save session", onPress: async () => {
           const token = getToken()
           if (!token) return navigation.replace('Login')
-          const response = updateSkillAPI(currentSkill._id, currentSkill.name, currentSkill.goal, durationInSecs / 3600, token)
+          const response = await updateSkillAPI(currentSkill._id, token, currentSkill.name, currentSkill.goal, durationInSecs / 3600)
           if (response != null) {
             navigation.pop()
           }
@@ -98,8 +98,8 @@ export default function SkillDetailsScreen({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <TextInput style={styles.textInput} placeholderTextColor="#999" placeholder='Time in min' keyboardType='number-pad' value={startTime} onChangeText={(text) => updateTime(text)} />
-      <Text style={styles.text}>{formatDuration(secondsLeft)}</Text>
+      <Text style={styles.secondsLeft}>{formatDuration(secondsLeft)}</Text>
+      {secondsLeft === 0 && <TextInput style={styles.textInput} placeholderTextColor="#999" placeholder='Time in min' keyboardType='number-pad' value={startTime} onChangeText={(text) => updateTime(text)} />}
       {error && <Text style={styles.errorText}>{error}</Text>}
       {startTime && secondsLeft == 0 && <Button title='Start' onPress={startTimer} />}
       {secondsLeft > 0 && <Button title='Stop' onPress={stopTimer} />}
@@ -115,19 +115,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  text: {
+  secondsLeft: {
     color: "#000",
-    marginTop: 16
+    marginBottom: 16,
+    fontSize: 24,
+    fontWeight: "900"
   },
   textInput: {
     borderWidth: 1,
     borderColor: '#000',
     borderRadius: 5,
     padding: 10,
-    color: "#000"
+    color: "#000",
+    marginBottom: 16
   },
   errorText: {
     marginBottom: 16,
-    color: "red"
+    color: COLORS.red
   }
 })

@@ -12,17 +12,17 @@ export default function Skills({ navigation }) {
     <Stack.Navigator
       screenListeners={{
         state: (e) => {
-          if (e.data.state.index === 0){
-            navigation.setOptions({headerShown:true})
-          }else{
-            navigation.setOptions({headerShown:false})
+          if (e.data.state.index === 0) {
+            navigation.setOptions({ headerShown: true })
+          } else {
+            navigation.setOptions({ headerShown: false })
           }
         }
       }}
-      screenOptions={{ headerShown: false, headerStyle:{backgroundColor:COLORS.blue}, headerTintColor:"#fff" }}>
+      screenOptions={{ headerShown: false, headerStyle: { backgroundColor: COLORS.blue }, headerTintColor: "#fff", contentStyle: { backgroundColor: COLORS.bgGray } }}>
       <Stack.Screen name='AllSkills' component={AllSkillScreen} />
-      <Stack.Screen name='SkillDetailScreen' component={SkillDetailsScreen} options={{headerShown:true}} />
-      <Stack.Screen name='CreateNewSkill' component={CreateNewSkill} options={{ presentation: "transparentModal", animation: 'slide_from_bottom' }} />
+      <Stack.Screen name='SkillDetailScreen' component={SkillDetailsScreen} options={{ headerShown: true }} />
+      <Stack.Screen name='CreateNewSkill' component={CreateNewSkill} options={{ presentation: "transparentModal", animation: 'slide_from_bottom', contentStyle: { backgroundColor: "transparent" } }} />
     </Stack.Navigator>
   )
 }

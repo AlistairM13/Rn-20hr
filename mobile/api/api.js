@@ -24,7 +24,6 @@ export const loginUser = async ({ email, password }) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
         })
-        console.log("login",response)
         if (!response.ok) throw new Error("Failed to login")
         return await response.json()
     } catch (err) {
@@ -67,7 +66,7 @@ export const createSkillAPI = async (name, goal, token) => {
     }
 }
 
-export const updateSkillAPI = async (skillId, name, goal, sessionDuration, token) => {
+export const updateSkillAPI = async (skillId, token, name, goal, sessionDuration = 0 ) => {
     try {
         const response = await fetch(`${API_URL}/skills/${skillId}`, {
             method: 'PATCH',
@@ -78,9 +77,7 @@ export const updateSkillAPI = async (skillId, name, goal, sessionDuration, token
             }
         })
         if (!response.ok) throw new Error("Failed to updated skill")
-        const res = await response.json()
-        console.log("res",res)
-        return res
+        return await response.json()
     } catch (err) {
         console.log("Error during skill update", err)
         return null

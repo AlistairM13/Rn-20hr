@@ -16,7 +16,7 @@ const Drawer = createDrawerNavigator();
 export default function Home() {
   return (
     <Drawer.Navigator
-    screenOptions={{headerStyle:{backgroundColor:COLORS.blue}, headerTintColor:"#fff"}}
+      screenOptions={{ sceneContainerStyle: { backgroundColor: COLORS.bgGray }, headerStyle: { backgroundColor: COLORS.blue }, headerTintColor: "#fff" }}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
       <Drawer.Screen name="Skills" component={Skills} />

@@ -10,6 +10,7 @@ export default function AllSkillScreen({ navigation }) {
     const { getToken, USER_ID } = useAppStore()
     const isFocused = useIsFocused()
     const [skills, setSkills] = useState([])
+
     useEffect(() => {
         isFocused && fetchSkills()
     }, [isFocused])
@@ -18,20 +19,21 @@ export default function AllSkillScreen({ navigation }) {
         const token = getToken()
         if (!token) return navigation.replace('Login')
         const newSkills = (await getAllSkillsAPI(token, USER_ID)).skills
+        console.log(newSkills, "here")
         setSkills([{}, ...newSkills])
     }
     async function deleteSkill(skill) {
         Alert.alert(
             'Delete Skill?',
-            `You have invested ${skill.timeInvested} hour(s) in this skill?`,
+            `You have invested ${skill.timeInvested.toFixed(2)} hour(s) in this skill.`,
             [
                 { text: "Cancel", style: 'cancel', onPress: () => { } },
                 {
                     text: 'Confirm Delete', style: 'destructive',
-                    onPress: () => {
+                    onPress: async () => {
                         const token = getToken()
                         if (!token) return navigation.replace('Login')
-                        const response = deleteSkillAPI(skill._id, token)
+                        const response = await deleteSkillAPI(skill._id, token)
                         if (response) {
                             fetchSkills()
                         }
@@ -41,8 +43,9 @@ export default function AllSkillScreen({ navigation }) {
         );
     }
 
+
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, skills.length == 1 && { alignItems: 'flex-start' }]}>
             <FlatList
                 data={skills}
                 numColumns={2}
@@ -53,13 +56,13 @@ export default function AllSkillScreen({ navigation }) {
                     <TouchableOpacity onPress={() => navigation.navigate("CreateNewSkill")} style={[styles.skillBar, styles.addItemBtn, { marginRight: 7 }]}>
                         <Icon name="add" size={70} color="#000" />
                     </TouchableOpacity> :
-                    <SkillItem skill={item} index={index} />}
+                    <SkillItem skill={item} index={index} onDelete={() => deleteSkill(item)} />}
             />
         </View>
     )
 }
 
-function SkillItem({ skill, index }) {
+function SkillItem({ skill, index, onDelete }) {
     const navigation = useNavigation()
     const progress = skill.timeInvested / 20 * 100
     const progressStyle = {
@@ -69,6 +72,7 @@ function SkillItem({ skill, index }) {
         backgroundColor: COLORS.green,
         bottom: 0,
     }
+
     return (
         <TouchableOpacity onPress={() => navigation.navigate('SkillDetailScreen', { skill: skill })} style={[styles.skillBar, index % 2 === 0 ? { marginRight: 7 } : { marginLeft: 7 }]}>
             <View style={progressStyle}></View>
@@ -77,7 +81,7 @@ function SkillItem({ skill, index }) {
                     <TouchableOpacity onPress={() => navigation.navigate('CreateNewSkill', { skill })}>
                         <Icon name="pencil" size={30} color="#000" />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={onDelete}>
                         <Icon name="trash" size={30} color="#000" />
                     </TouchableOpacity>
                 </View>
@@ -92,8 +96,7 @@ function SkillItem({ skill, index }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        backgroundColor: COLORS.bgGray
+        alignItems: 'center'
     },
     skillBar: {
         borderRadius: 8,

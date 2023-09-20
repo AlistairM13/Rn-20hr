@@ -1,6 +1,6 @@
 import { KeyboardAvoidingView, Pressable, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native'
-import { useState } from 'react'
-import { createSkillAPI } from '../../api/api'
+import { useLayoutEffect, useState } from 'react'
+import { createSkillAPI, updateSkillAPI } from '../../api/api'
 import { z } from 'zod'
 import useAppStore from '../../store/appStore'
 import { COLORS } from '../../constants/styles'
@@ -11,9 +11,11 @@ const skillSchema = z.object({
 })
 
 export default function CreateNewSkillScreen({ navigation, route }) {
+
     const { getToken } = useAppStore()
     const [skillInfo, setSkillInfo] = useState({ name: "", goal: "" })
     const [errors, setErrors] = useState({})
+    const [isEditMode, setIsEditMode] = useState(false)
 
     function updateSkillInfo(fieldName, text) {
         setSkillInfo(prev => ({ ...prev, [fieldName]: text }))
@@ -41,17 +43,54 @@ export default function CreateNewSkillScreen({ navigation, route }) {
             }
         }
     }
+    async function updateSkill() {
+        try {
+            skillSchema.parse(skillInfo)
+            const token = getToken()
+            const skillId = route.params.skill._id
+            if (!token) return navigation.replace('login') // really bad UX
+            const response = await updateSkillAPI(skillId, token, skillInfo.name, skillInfo.goal)
+            if (response) {
+                navigation.pop()
+            }
+        } catch (err) {
+            if (err.formErrors) {
+                const fieldErrors = {};
+                const errors = err.formErrors.fieldErrors
+                for (let err in errors) {
+                    fieldErrors[err] = errors[err][0]
+                }
+                setErrors(fieldErrors);
+            } else {
+                console.error("error logging in ", err);
+            }
+        }
+    }
+
+    useLayoutEffect(() => {
+        const skillToBeEdited = route.params?.skill
+        if (skillToBeEdited) {
+            setIsEditMode(true)
+            setSkillInfo({ name: skillToBeEdited.name, goal: skillToBeEdited.goal })
+        }
+    }, [])
+
     return (
         <Pressable style={styles.modalContainer} onPress={navigation.goBack}  >
             <KeyboardAvoidingView style={styles.modalContent}>
-                <Text>Create New Skill</Text>
+                <Text>{isEditMode ? "Update skill" : "Create New Skill"}</Text>
                 <TextInput style={styles.textInput} placeholder="Name of the skill" value={skillInfo.name} onChangeText={text => updateSkillInfo("name", text)} />
-                {errors.name && <Text>{errors.name}</Text>}
+                {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
                 <TextInput style={styles.textInput} placeholder="Enter your goal" value={skillInfo.goal} onChangeText={text => updateSkillInfo("goal", text)} />
-                {errors.goal && <Text>{errors.goal}</Text>}
-                <TouchableOpacity style={styles.button} onPress={createSkill}>
-                    <Text style={{ color: "black" }}>Create Skill</Text>
-                </TouchableOpacity>
+                {errors.goal && <Text style={styles.errorText}>{errors.goal}</Text>}
+                {isEditMode ?
+                    <TouchableOpacity style={styles.button} onPress={updateSkill}>
+                        <Text style={{ color: "black" }}>Update Skill</Text>
+                    </TouchableOpacity> :
+                    <TouchableOpacity style={styles.button} onPress={createSkill}>
+                        <Text style={{ color: "black" }}>Create Skill</Text>
+                    </TouchableOpacity>
+                }
             </KeyboardAvoidingView>
         </Pressable>
     )
@@ -77,6 +116,9 @@ const styles = StyleSheet.create({
         padding: 10,
         marginTop: 16,
         marginBottom: 4
+    },
+    errorText: {
+        color:COLORS.red
     },
     button: {
         width: "70%",
