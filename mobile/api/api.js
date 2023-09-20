@@ -1,5 +1,3 @@
-
-
 const API_URL = "http://192.168.0.111:5000/api"
 
 export const signupUser = async ({ name, email, password }) => {
@@ -32,14 +30,26 @@ export const loginUser = async ({ email, password }) => {
     }
 }
 
+export const fetchUserDetailsAPI = async (userId, token) => {
+    try {
+        const response = await fetch(`${API_URL}/users/${userId}`, {
+            method: 'GET',
+            headers: { Authorization: token }
+        })
+        if (!response.ok) throw new Error("Failed to fetch skills")
+        return await response.json()
+    } catch (err) {
+        console.log("Error while fetching skills", err)
+        return null
+    }
+}
+
 export const getAllSkillsAPI = async (token, userId) => {
     try {
-        // console.log(token, userId)
         const response = await fetch(`${API_URL}/skills/users/${userId}`, {
             method: 'GET',
             headers: { Authorization: token }
         })
-        // console.log("getall",response)
         if (!response.ok) throw new Error("Failed to fetch skills")
         return await response.json()
     } catch (err) {
@@ -66,7 +76,7 @@ export const createSkillAPI = async (name, goal, token) => {
     }
 }
 
-export const updateSkillAPI = async (skillId, token, name, goal, sessionDuration = 0 ) => {
+export const updateSkillAPI = async (skillId, token, name, goal, sessionDuration = 0) => {
     try {
         const response = await fetch(`${API_URL}/skills/${skillId}`, {
             method: 'PATCH',
@@ -98,16 +108,29 @@ export const deleteSkillAPI = async (skillId, token) => {
     }
 }
 
-export const fetchLeaderboards = async () => {
+export const fetchGlobalLeaderboardsAPI = async () => {
     try {
         const response = await fetch(
             `${API_URL}/users/leaderboards/global`,
-            { headers: { Authorization: "Bearer " + zustandStorage.getItem(TOKEN) } }
         )
-        if (!response.ok) throw new Error("failed to fetch leaderboards")
-        return await response.json()
+        if (!response.ok) throw new Error("failed to fetch global leaderboards")
+        return (await response.json()).users
     } catch (err) {
-        console.log("Error in fetching leaderboards", err)
+        console.log("Error in fetching global leaderboards", err)
+        return null
+    }
+}
+
+export const fetchLocalLeaderboardsAPI = async (token) => {
+    try {
+        const response = await fetch(
+            `${API_URL}/users/leaderboards/local`,
+            { headers: { Authorization: token } }
+        )
+        if (!response.ok) throw new Error("failed to fetch local leaderboards")
+        return (await response.json()).users
+    } catch (err) {
+        console.log("Error in fetching local leaderboards", err)
         return null
     }
 }

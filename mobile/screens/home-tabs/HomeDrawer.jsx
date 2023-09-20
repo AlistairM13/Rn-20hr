@@ -1,5 +1,4 @@
 import { StyleSheet, View } from 'react-native'
-import LeaderBoards from './LeaderBoards';
 import Skills from './SkillsStackScreen';
 import {
   createDrawerNavigator,
@@ -10,6 +9,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import useAppStore from '../../store/appStore';
 import { COLORS } from '../../constants/styles';
+import LeaderBoardTabScreen from './LeaderBoardTabsScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -20,7 +20,7 @@ export default function Home() {
       drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
       <Drawer.Screen name="Skills" component={Skills} />
-      <Drawer.Screen name="Leaderboards" component={LeaderBoards} />
+      <Drawer.Screen name="Leaderboards" component={LeaderBoardTabScreen} />
     </Drawer.Navigator>
   )
 }
@@ -42,5 +42,3 @@ function CustomDrawerContent(props) {
     </DrawerContentScrollView>
   );
 }
-
-const styles = StyleSheet.create({})

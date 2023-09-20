@@ -24,7 +24,7 @@ export default function CreateNewSkillScreen({ navigation, route }) {
         try {
             skillSchema.parse(skillInfo)
             const token = getToken()
-            if (!token) return navigation.replace('login') // really bad UX
+            if (!token) return navigation.replace('Login') // really bad UX
             const response = await createSkillAPI(skillInfo.name, skillInfo.goal, token)
             if (response) {
                 navigation.pop() // This is why bottom sheet is needed

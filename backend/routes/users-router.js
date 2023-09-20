@@ -23,11 +23,11 @@ router.post(
 
 router.post('/login', userController.login);
 
+router.get('/leaderboards/global', userController.getGlobalLeaderBoard)
 router.use(checkAuth)
 
 router.post('/:uid/follow', userController.followUser)
 router.delete('/:uid/unfollow', userController.unfollowUser)
-router.get('/leaderboards/global', userController.getGlobalLeaderBoard)
 router.get('/leaderboards/local', userController.getLocalLeaderboard)
 
 module.exports = router
