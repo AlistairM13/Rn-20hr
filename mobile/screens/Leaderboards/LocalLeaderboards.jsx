@@ -2,10 +2,11 @@ import { TouchableOpacity, ActivityIndicator, StyleSheet, Text, View } from 'rea
 import { useCallback, useEffect, useState } from 'react'
 import { COLORS } from '../../constants/styles'
 import { FlatList, RefreshControl } from 'react-native-gesture-handler'
-import useAppStore from '../../store/appStore'
 import { fetchLocalLeaderboardsAPI } from '../../api/api'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { showToast } from '../../helpers/helpers'
 import UserProfileScreen from './UserProfileScreen'
+import useAppStore from '../../store/appStore'
 
 const Stack = createNativeStackNavigator()
 
@@ -18,7 +19,7 @@ export default function LocalLeaderboards() {
   )
 }
 
-  function LocalLeaderboardsScreen({ navigation }) {
+function LocalLeaderboardsScreen({ navigation }) {
 
   const { getToken, USER_ID } = useAppStore()
   const [users, setUsers] = useState([])
@@ -37,13 +38,13 @@ export default function LocalLeaderboards() {
       setIsLoading(false)
       setUsers(users)
     } catch (err) {
-      console.log("fetchlocal", err)
+      showToast("error", 'Error', "Could not fetch the leaderboards")
     }
   }, [])
 
   return (
     <View style={styles.container}>
-      <Text style={{fontWeight:300, color: 'black', alignSelf:'center', marginTop:8}}>Swipe down to refresh</Text>
+      <Text style={{ fontWeight: 300, color: 'black', alignSelf: 'center', marginTop: 8 }}>Swipe down to refresh</Text>
       {isLoading && <View style={{ position: 'absolute', height: "100%", width: "100%", justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="small" color={COLORS.blue} />
       </View>}
@@ -52,8 +53,8 @@ export default function LocalLeaderboards() {
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={fetchLocalLeaderboards} />
         }
-        ListHeaderComponent={() => <View style={{ flexDirection: 'row', padding:8 }}>
-          <Text style={{ color: "black", marginRight:8 }}>Rank</Text>
+        ListHeaderComponent={() => <View style={{ flexDirection: 'row', padding: 8 }}>
+          <Text style={{ color: "black", marginRight: 8 }}>Rank</Text>
           <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'space-between' }}>
             <Text style={{ color: "black" }}>Player</Text>
             <Text style={{ color: "black" }}>Time Invested</Text>
@@ -71,7 +72,7 @@ export default function LocalLeaderboards() {
                 <Text style={{ color: "black" }}>{item.totalTimeInvested.toFixed(2)}</Text>
               </View>
             </View>) :
-            (<TouchableOpacity style={styles.leaderBoardItem} onPress={()=>navigation.navigate('UserProfileScreen',{user:item})}>
+            (<TouchableOpacity style={styles.leaderBoardItem} onPress={() => navigation.navigate('UserProfileScreen', { user: item })}>
               <Text style={{ color: "black", marginRight: 16 }}>{index < 3 ? `#${index + 1}` : index + 1}</Text>
               <View style={{ flex: 1, flexDirection: 'row', justifyContent: "space-between" }}>
                 <Text style={{ color: "black" }}>{item.name}</Text>

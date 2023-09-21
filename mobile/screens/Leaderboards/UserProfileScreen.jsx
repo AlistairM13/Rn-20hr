@@ -1,8 +1,9 @@
 import { Button, FlatList, StyleSheet, Text, View } from 'react-native'
 import { useLayoutEffect, useState } from 'react'
-import useAppStore from '../../store/appStore'
 import { fetchUserDetailsAPI, followUserAPI, unFollowUserAPI } from '../../api/api'
 import { COLORS } from '../../constants/styles'
+import { showToast } from '../../helpers/helpers'
+import useAppStore from '../../store/appStore'
 
 export default function UserProfileScreen({ navigation, route }) {
     const user = route.params.user
@@ -32,7 +33,7 @@ export default function UserProfileScreen({ navigation, route }) {
             setUserSkills(response.user.skills)
             alreadyFollowed(response.user.followers)
         } catch (err) {
-            console.log(err)
+            showToast("error", 'Error', "Could not fetch player details")
         }
     }
 
@@ -41,7 +42,7 @@ export default function UserProfileScreen({ navigation, route }) {
             await followUserAPI(user.id, token)
             await fetchUserDetails()
         } catch (err) {
-            console.log(err)
+            showToast("error", 'Error', "Could not follow player")
         }
     }
 
@@ -50,7 +51,7 @@ export default function UserProfileScreen({ navigation, route }) {
             await unFollowUserAPI(user.id, token)
             await fetchUserDetails()
         } catch (err) {
-            console.log(err)
+            showToast("error", 'Error', "Could not unfollow player")
         }
     }
 

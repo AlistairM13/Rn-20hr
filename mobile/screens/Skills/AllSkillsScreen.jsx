@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import Icon from 'react-native-vector-icons/Ionicons'
 import { getAllSkillsAPI, deleteSkillAPI } from '../../api/api'
-import useAppStore from '../../store/appStore'
 import { useIsFocused, useNavigation } from '@react-navigation/native'
 import { COLORS } from '../../constants/styles'
+import Icon from 'react-native-vector-icons/Ionicons'
+import useAppStore from '../../store/appStore'
 
 export default function AllSkillScreen({ navigation }) {
     const { getToken, USER_ID } = useAppStore()

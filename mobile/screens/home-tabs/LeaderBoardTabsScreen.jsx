@@ -1,6 +1,3 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { COLORS } from '../../constants/styles'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import LocalLeaderboards from '../Leaderboards/LocalLeaderboards';
 import GlobalLeaderboards from '../Leaderboards/GlobalLeaderboards';

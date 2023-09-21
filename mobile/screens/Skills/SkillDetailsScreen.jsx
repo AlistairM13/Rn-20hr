@@ -1,10 +1,10 @@
 import { Alert, Button, Keyboard, StyleSheet, Text, TextInput, View } from 'react-native'
-import React, { useState, useEffect, useLayoutEffect } from 'react'
-import useCountdown from '../../hooks/useCountdown'
+import { useState, useEffect, useLayoutEffect } from 'react'
 import { formatDuration } from '../../helpers/helpers'
-import useAppStore from '../../store/appStore'
 import { updateSkillAPI } from '../../api/api'
 import { COLORS } from '../../constants/styles'
+import useAppStore from '../../store/appStore'
+import useCountdown from '../../hooks/useCountdown'
 
 export default function SkillDetailsScreen({ navigation, route }) {
   const currentSkill = route.params.skill

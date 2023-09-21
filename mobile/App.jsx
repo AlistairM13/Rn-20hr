@@ -1,12 +1,11 @@
-import { StatusBar, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StatusBar, StyleSheet } from 'react-native'
+import { COLORS } from './constants/styles'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { NavigationContainer } from '@react-navigation/native'
 import Login from './screens/auth/Login'
 import Signup from './screens/auth/Signup'
 import Home from './screens/home-tabs/HomeDrawer'
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { NavigationContainer } from '@react-navigation/native'
 import useAppStore from './store/appStore'
-import { COLORS } from './constants/styles'
 
 const Stack = createNativeStackNavigator()
 

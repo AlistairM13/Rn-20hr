@@ -2,8 +2,9 @@ import { KeyboardAvoidingView, Pressable, StyleSheet, Text, TextInput, Touchable
 import { useLayoutEffect, useState } from 'react'
 import { createSkillAPI, updateSkillAPI } from '../../api/api'
 import { z } from 'zod'
-import useAppStore from '../../store/appStore'
 import { COLORS } from '../../constants/styles'
+import { showToast } from '../../helpers/helpers'
+import useAppStore from '../../store/appStore'
 
 const skillSchema = z.object({
     name: z.string().nonempty().max(15, "Maximum of 15 characters allowed"),
@@ -39,7 +40,7 @@ export default function CreateNewSkillScreen({ navigation, route }) {
                 }
                 setErrors(fieldErrors);
             } else {
-                console.error("error logging in ", err);
+                showToast("error", 'Error', "Could not create skill")
             }
         }
     }
@@ -62,7 +63,7 @@ export default function CreateNewSkillScreen({ navigation, route }) {
                 }
                 setErrors(fieldErrors);
             } else {
-                console.error("error logging in ", err);
+                showToast("error", 'Error', "Could not update skill details")
             }
         }
     }

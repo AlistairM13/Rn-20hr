@@ -1,10 +1,10 @@
-import { ActivityIndicator, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
+import { ActivityIndicator, RefreshControl, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { useCallback, useEffect, useState } from 'react'
 import { COLORS } from '../../constants/styles'
-import { FlatList } from 'react-native-gesture-handler'
 import { fetchGlobalLeaderboardsAPI } from '../../api/api'
-import useAppStore from '../../store/appStore'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { showToast } from '../../helpers/helpers'
+import useAppStore from '../../store/appStore'
 import UserProfileScreen from './UserProfileScreen'
 
 const Stack = createNativeStackNavigator()
@@ -34,7 +34,7 @@ function GlobalLeaderboardsScreen({ navigation }) {
       setIsLoading(false)
       setUsers(users)
     } catch (err) {
-      console.log("fetchglobal", err)
+      showToast("error", 'Error', "Could not fetch the leaderboards")
     }
   }, [])
 

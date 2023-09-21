@@ -2,8 +2,9 @@ import { ActivityIndicator, Button, StyleSheet, Text, TextInput, View } from 're
 import { useState } from 'react'
 import { z } from 'zod'
 import { signupUser } from '../../api/api'
-import useAppStore from '../../store/appStore'
 import { COLORS } from '../../constants/styles'
+import { showToast } from '../../helpers/helpers'
+import useAppStore from '../../store/appStore'
 
 export default function Signup({ navigation }) {
   const { setToken } = useAppStore()
@@ -40,7 +41,7 @@ export default function Signup({ navigation }) {
         }
         setErrors(fieldErrors);
       } else {
-        console.error("error signing up ", err);
+        showToast("error", 'Error', "Could not signup")
       }
     }
   }

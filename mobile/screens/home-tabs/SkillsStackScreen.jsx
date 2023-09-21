@@ -2,7 +2,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import CreateNewSkill from '../Skills/CreateNewSkillModal'
 import SkillDetailsScreen from '../Skills/SkillDetailsScreen'
 import AllSkillScreen from '../Skills/AllSkillsScreen'
-import { useEffect } from 'react'
 import { COLORS } from '../../constants/styles'
 
 const Stack = createNativeStackNavigator()
