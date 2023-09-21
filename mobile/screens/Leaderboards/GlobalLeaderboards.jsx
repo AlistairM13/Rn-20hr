@@ -18,7 +18,7 @@ export default function GlobalLeaderboards() {
   )
 }
 
-function GlobalLeaderboardsScreen({navigation}) {
+function GlobalLeaderboardsScreen({ navigation }) {
   const { USER_ID } = useAppStore()
   const [users, setUsers] = useState([])
   const [isLoading, setIsLoading] = useState(false)
@@ -40,6 +40,8 @@ function GlobalLeaderboardsScreen({navigation}) {
 
   return (
     <View style={styles.container}>
+      <Text style={{ fontWeight: 300, color: 'black', alignSelf: 'center', marginTop: 8 }}>Swipe down to refresh</Text>
+
       {isLoading && <View style={{ position: 'absolute', height: "100%", width: "100%", justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="small" color={COLORS.blue} />
       </View>}
@@ -67,7 +69,7 @@ function GlobalLeaderboardsScreen({navigation}) {
                 <Text style={{ color: "black" }}>{item.totalTimeInvested.toFixed(2)}</Text>
               </View>
             </View>) :
-            (<TouchableOpacity style={styles.leaderBoardItem} onPress={()=>navigation.navigate('UserProfileScreen',{user:item}) }>
+            (<TouchableOpacity style={styles.leaderBoardItem} onPress={() => navigation.navigate('UserProfileScreen', { user: item })}>
               <Text style={{ color: "black", marginRight: 16 }}>{index < 3 ? `#${index + 1}` : index + 1}</Text>
               <View style={{ flex: 1, flexDirection: 'row', justifyContent: "space-between" }}>
                 <Text style={{ color: "black" }}>{item.name}</Text>

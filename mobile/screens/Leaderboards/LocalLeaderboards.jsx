@@ -4,8 +4,21 @@ import { COLORS } from '../../constants/styles'
 import { FlatList, RefreshControl } from 'react-native-gesture-handler'
 import useAppStore from '../../store/appStore'
 import { fetchLocalLeaderboardsAPI } from '../../api/api'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import UserProfileScreen from './UserProfileScreen'
 
-export default function LocalLeaderboards({ navigation }) {
+const Stack = createNativeStackNavigator()
+
+export default function LocalLeaderboards() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name='LocalLbScreen' component={LocalLeaderboardsScreen} />
+      <Stack.Screen name='UserProfileScreen' component={UserProfileScreen} />
+    </Stack.Navigator>
+  )
+}
+
+  function LocalLeaderboardsScreen({ navigation }) {
 
   const { getToken, USER_ID } = useAppStore()
   const [users, setUsers] = useState([])
@@ -30,6 +43,7 @@ export default function LocalLeaderboards({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <Text style={{fontWeight:300, color: 'black', alignSelf:'center', marginTop:8}}>Swipe down to refresh</Text>
       {isLoading && <View style={{ position: 'absolute', height: "100%", width: "100%", justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="small" color={COLORS.blue} />
       </View>}
@@ -57,7 +71,7 @@ export default function LocalLeaderboards({ navigation }) {
                 <Text style={{ color: "black" }}>{item.totalTimeInvested.toFixed(2)}</Text>
               </View>
             </View>) :
-            (<TouchableOpacity style={styles.leaderBoardItem}>
+            (<TouchableOpacity style={styles.leaderBoardItem} onPress={()=>navigation.navigate('UserProfileScreen',{user:item})}>
               <Text style={{ color: "black", marginRight: 16 }}>{index < 3 ? `#${index + 1}` : index + 1}</Text>
               <View style={{ flex: 1, flexDirection: 'row', justifyContent: "space-between" }}>
                 <Text style={{ color: "black" }}>{item.name}</Text>
