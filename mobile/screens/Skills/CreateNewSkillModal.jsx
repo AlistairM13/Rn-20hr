@@ -1,5 +1,5 @@
 import { KeyboardAvoidingView, Pressable, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native'
-import { useLayoutEffect, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { createSkillAPI, updateSkillAPI } from '../../api/api'
 import { z } from 'zod'
 import { COLORS } from '../../constants/styles'
@@ -17,6 +17,9 @@ export default function CreateNewSkillScreen({ navigation, route }) {
     const [skillInfo, setSkillInfo] = useState({ name: "", goal: "" })
     const [errors, setErrors] = useState({})
     const [isEditMode, setIsEditMode] = useState(false)
+
+    const nameRef = useRef()
+    const goalRef = useRef()
 
     function updateSkillInfo(fieldName, text) {
         setSkillInfo(prev => ({ ...prev, [fieldName]: text }))
@@ -74,18 +77,34 @@ export default function CreateNewSkillScreen({ navigation, route }) {
             setIsEditMode(true)
             setSkillInfo({ name: skillToBeEdited.name, goal: skillToBeEdited.goal })
         }
+        nameRef.current.focus()
     }, [])
 
     return (
         <Pressable style={styles.modalContainer} onPress={navigation.goBack}  >
             <KeyboardAvoidingView style={styles.modalContent}>
                 <Text>{isEditMode ? "Update skill" : "Create New Skill"}</Text>
-                <TextInput style={styles.textInput} placeholder="Name of the skill" value={skillInfo.name} onChangeText={text => updateSkillInfo("name", text)} />
+                <TextInput
+                ref={nameRef}
+                    style={styles.textInput}
+                    placeholder="Name of the skill"
+                    returnKeyType='next'
+                    blurOnSubmit={false}
+                    onSubmitEditing={() => goalRef.current.focus()}
+                    value={skillInfo.name}
+                    onChangeText={text => updateSkillInfo("name", text)}
+                />
                 {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
-                <TextInput style={styles.textInput} placeholder="Enter your goal" value={skillInfo.goal} onChangeText={text => updateSkillInfo("goal", text)} />
+                <TextInput
+                    ref={goalRef}
+                    style={styles.textInput}
+                    placeholder="Enter your goal"
+                    value={skillInfo.goal}
+                    onChangeText={text => updateSkillInfo("goal", text)}
+                />
                 {errors.goal && <Text style={styles.errorText}>{errors.goal}</Text>}
                 {isEditMode ?
-                    <TouchableOpacity style={styles.button} onPress={updateSkill}>
+                    <TouchableOpacity  style={styles.button} onPress={updateSkill}>
                         <Text style={{ color: "black" }}>Update Skill</Text>
                     </TouchableOpacity> :
                     <TouchableOpacity style={styles.button} onPress={createSkill}>
@@ -119,7 +138,7 @@ const styles = StyleSheet.create({
         marginBottom: 4
     },
     errorText: {
-        color:COLORS.red
+        color: COLORS.red
     },
     button: {
         width: "70%",

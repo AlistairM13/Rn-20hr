@@ -6,6 +6,7 @@ import Login from './screens/auth/Login'
 import Signup from './screens/auth/Signup'
 import Home from './screens/home-tabs/HomeDrawer'
 import useAppStore from './store/appStore'
+import Toast from 'react-native-toast-message'
 
 const Stack = createNativeStackNavigator()
 
@@ -21,6 +22,7 @@ export default function App() {
         <Stack.Screen name='Home' component={Home} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
+    <Toast />
     </>
   )
 }

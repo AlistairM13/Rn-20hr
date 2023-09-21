@@ -1,5 +1,5 @@
 import { ActivityIndicator, Button, StyleSheet, Text, TextInput, View } from 'react-native'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { z } from 'zod'
 import { loginUser } from '../../api/api'
 import { COLORS } from '../../constants/styles'
@@ -14,10 +14,12 @@ const loginSchema = z.object({
 export default function Login({ navigation }) {
   const { setToken } = useAppStore()
   const [errors, setErrors] = useState({})
-
-
   const [loginData, setLoginData] = useState({ email: '', password: '' })
   const [isLoading, setIsLoading] = useState()
+
+  const passwordRef = useRef()
+  const loginBtnRef = useRef()
+
   function updateForm(fieldName, text) {
     setErrors(prev => ({ ...prev, [fieldName]: '' }))
     setLoginData(prev => ({ ...prev, [fieldName]: text }))
@@ -25,11 +27,11 @@ export default function Login({ navigation }) {
 
   const login = async () => {
     try {
-      setIsLoading(true)
       loginSchema.parse(loginData)
+      setIsLoading(true)
       const loginResponse = await loginUser({ ...loginData })
+      if (!loginResponse) throw new Error("error")
       const token = "Bearer " + loginResponse.token
-      setIsLoading(false)
       setToken(token)
       navigation.replace('Home')
     } catch (err) {
@@ -43,17 +45,45 @@ export default function Login({ navigation }) {
       } else {
         showToast("error", 'Error', "Could not login")
       }
+    } finally {
+      setIsLoading(false)
     }
   }
+
   return (
     <View style={styles.container}>
-
-      <TextInput placeholderTextColor={'#999'} style={styles.textInput} placeholder="Enter your email" value={loginData.email} onChangeText={text => updateForm("email", text)} />
+      <TextInput
+        style={styles.textInput}
+        autoCapitalize='none'
+        placeholder="Enter your email"
+        placeholderTextColor='#999'
+        returnKeyType='next'
+        blurOnSubmit={false}
+        onSubmitEditing={() => passwordRef.current.focus()}
+        value={loginData.email}
+        onChangeText={text => updateForm("email", text)}
+      />
       {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-      <TextInput placeholderTextColor={'#999'} style={styles.textInput} placeholder="Enter your password" value={loginData.password} onChangeText={text => updateForm("password", text)} />
+      <TextInput
+        ref={passwordRef}
+        autoCapitalize='none'
+        placeholder="Enter your password"
+        placeholderTextColor='#999'
+        style={styles.textInput}
+        returnKeyType='done'
+        blurOnSubmit={true}
+        onSubmitEditing={() => loginBtnRef.current.props.onPress()}
+        value={loginData.password}
+        onChangeText={text => updateForm("password", text)}
+      />
       {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
-      <Text style={{ paddingVertical: 16, color: 'black' }} onPress={() => navigation.replace('SignUp')}>Don't have an account? <Text style={{ fontSize: 16, fontWeight: "600" }}>Signup!</Text></Text>
-      {!isLoading && <Button title='login' onPress={login} />}
+      <Text
+        style={{ paddingVertical: 16, color: 'black' }}
+        onPress={() => navigation.replace('SignUp')}
+      >Don't have an account?
+        <Text style={{ fontSize: 16, fontWeight: "600", color: COLORS.blue }}> Signup!</Text>
+      </Text>
+      {!isLoading && <Button ref={loginBtnRef} title='login' onPress={login} />}
       {isLoading && <ActivityIndicator size="large" color={COLORS.blue} />}
     </View>
   )

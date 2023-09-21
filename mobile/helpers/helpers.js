@@ -19,8 +19,6 @@ export function showToast(type, text1, text2) {
     type,
     text1,
     text2,
-    bottomOffset: 40,
-    keyboardOffset: 10,
     position: 'bottom'
   });
 }
