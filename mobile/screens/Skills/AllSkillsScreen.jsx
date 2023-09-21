@@ -84,8 +84,8 @@ function SkillItem({ skill, index, onDelete }) {
                         <Icon name="trash" size={30} color="#000" />
                     </TouchableOpacity>
                 </View>
-                <Text style={styles.text}>{skill.name}</Text>
-                <Text style={styles.text}>{skill.goal}</Text>
+                <Text style={styles.text}>{skill.name.length > 11 ? `${skill.name.slice(0, 11)}...` : skill.name}</Text>
+                <Text style={styles.text}>{skill.goal.length > 11 ? `${skill.goal.slice(0, 11)}...` : skill.goal}</Text>
                 <Text style={styles.text}>Time: {skill.timeInvested.toFixed(2)}</Text>
             </View>
         </TouchableOpacity>

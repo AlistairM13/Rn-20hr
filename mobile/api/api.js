@@ -1,4 +1,5 @@
 const API_URL = "http://192.168.0.111:5000/api"
+// const API_URL = "https://the-20hr-rule.onrender.com/api"
 
 export const signupUser = async ({ name, email, password }) => {
     try {
@@ -44,6 +45,34 @@ export const fetchUserDetailsAPI = async (userId, token) => {
     }
 }
 
+export const followUserAPI = async (userId, token) => {
+    try {
+        const response = await fetch(`${API_URL}/users/${userId}/follow`, {
+            method: 'POST',
+            headers: { Authorization: token }
+        })
+        console.log("follow", response)
+        if (!response.ok) throw new Error("Failed to follow user")
+        return await response.json()
+    } catch (err) {
+        console.log("Error while following user", err)
+        return null
+    }
+}
+export const unFollowUserAPI = async (userId, token) => {
+    try {
+        const response = await fetch(`${API_URL}/users/${userId}/unfollow`, {
+            method: 'DELETE',
+            headers: { Authorization: token }
+        })
+        console.log("unfollow", response)
+        if (!response.ok) throw new Error("Failed to follow user")
+        return await response.json()
+    } catch (err) {
+        console.log("Error while following user", err)
+        return null
+    }
+}
 export const getAllSkillsAPI = async (token, userId) => {
     try {
         const response = await fetch(`${API_URL}/skills/users/${userId}`, {

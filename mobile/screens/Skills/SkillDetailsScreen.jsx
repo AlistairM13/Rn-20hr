@@ -12,7 +12,6 @@ export default function SkillDetailsScreen({ navigation, route }) {
   const { secondsLeft, startCountdown, stopCountdown } = useCountdown()
   const [startTime, setStartTime] = useState()
   const [error, setError] = useState()
-  const [congrats, setCongrats] = useState(false)
 
   function startTimer() {
     const trimmed = startTime.trim()
@@ -34,7 +33,6 @@ export default function SkillDetailsScreen({ navigation, route }) {
 
   function updateTime(text) {
     setError()
-    // setCongrats(false)
     setStartTime(text)
   }
 
@@ -97,20 +95,21 @@ export default function SkillDetailsScreen({ navigation, route }) {
   }, [navigation, secondsLeft]);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.secondsLeft}>{formatDuration(secondsLeft)}</Text>
-      {secondsLeft === 0 && <TextInput style={styles.textInput} placeholderTextColor="#999" placeholder='Time in min' keyboardType='number-pad' value={startTime} onChangeText={(text) => updateTime(text)} />}
-      {error && <Text style={styles.errorText}>{error}</Text>}
-      {startTime && secondsLeft == 0 && <Button title='Start' onPress={startTimer} />}
-      {secondsLeft > 0 && <Button title='Stop' onPress={stopTimer} />}
-      {congrats && <Text style={{ color: "black" }}>Congrats!</Text>}
-      {congrats && <Button title='Save session' onPress={saveSession} />}
+    <View style={{ flex: 1 }}>
+      <Text style={{ alignSelf: 'center', fontSize:20, marginTop: 16, color:'black' }}>Goal: {currentSkill.goal}</Text>
+      <View style={styles.innerContainer}>
+        <Text style={styles.secondsLeft}>{formatDuration(secondsLeft)}</Text>
+        {secondsLeft === 0 && <TextInput style={styles.textInput} placeholderTextColor="#999" placeholder='Time in min' keyboardType='number-pad' value={startTime} onChangeText={(text) => updateTime(text)} />}
+        {error && <Text style={styles.errorText}>{error}</Text>}
+        {startTime && secondsLeft == 0 && <Button title='Start' onPress={startTimer} />}
+        {secondsLeft > 0 && <Button title='Stop' onPress={stopTimer} />}
+      </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
+  innerContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",

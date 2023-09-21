@@ -1,24 +1,54 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native'
-import { useEffect, useState } from 'react'
+import { Button, FlatList, StyleSheet, Text, View } from 'react-native'
+import { useLayoutEffect, useState } from 'react'
 import useAppStore from '../../store/appStore'
-import { fetchUserDetailsAPI } from '../../api/api'
+import { fetchUserDetailsAPI, followUserAPI, unFollowUserAPI } from '../../api/api'
 import { COLORS } from '../../constants/styles'
-
 
 export default function UserProfileScreen({ navigation, route }) {
     const user = route.params.user
-    const { getToken } = useAppStore()
+    const { getToken, USER_ID } = useAppStore()
     const [userSkills, setUserSkills] = useState([])
-    useEffect(() => {
+    const [token, setToken] = useState()
+    const [isFollowed, setIsFollowed] = useState(false)
+
+    useLayoutEffect(() => {
+        const token = getToken()
+        if (!token) return navigation.replace('Login')
+        setToken(token)
         fetchUserDetails()
     }, [])
 
+    function alreadyFollowed(followers) {
+        if (followers.includes(USER_ID)) {
+            setIsFollowed(true)
+        } else {
+            setIsFollowed(false)
+        }
+    }
+
     async function fetchUserDetails() {
         try {
-            const token = getToken()
-            if (!token) return navigation.replace('Login')
             const response = await fetchUserDetailsAPI(user.id, token)
             setUserSkills(response.user.skills)
+            alreadyFollowed(response.user.followers)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    async function follow() {
+        try {
+            await followUserAPI(user.id, token)
+            await fetchUserDetails()
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    async function unFollow() {
+        try {
+            await unFollowUserAPI(user.id, token)
+            await fetchUserDetails()
         } catch (err) {
             console.log(err)
         }
@@ -26,17 +56,23 @@ export default function UserProfileScreen({ navigation, route }) {
 
     return (
         <View style={styles.container}>
-            <View style={{padding:16}}>
-            <Text style={styles.text}>{user.name}</Text>
-            <Text style={styles.text}>{user.skillCount}</Text>
-            <Text style={styles.text}>{user.totalTimeInvested.toFixed(2)}</Text>
+            <View style={{ padding: 16 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <Text style={styles.text}>{user.name}</Text>
+                    {!isFollowed && <Button onPress={follow} title='Follow' color="#3272DB" />}
+                    {isFollowed && <Button onPress={unFollow} title='Unfollow' color="#ccc" />}
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={styles.text}>Skills: {user.skillCount}</Text>
+                    <Text style={styles.text}>Total Time:{user.totalTimeInvested.toFixed(2)} hour(s)</Text>
+                </View>
             </View>
             <FlatList
                 contentContainerStyle={{ padding: 8, paddingTop: 16 }}
                 ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
                 numColumns={2}
                 data={userSkills}
-                renderItem={({ item, index }) => <SkillItem skill={item} index={index} /> }
+                renderItem={({ item, index }) => <SkillItem skill={item} index={index} />}
             />
         </View>
     )
@@ -56,8 +92,8 @@ function SkillItem({ skill, index }) {
         <View style={[styles.skillBar, index % 2 === 0 ? { marginRight: 7 } : { marginLeft: 7 }]}>
             <View style={progressStyle}></View>
             <View style={{ padding: 8 }}>
-                <Text style={styles.text}>{skill.name}</Text>
-                <Text style={styles.text}>{skill.goal}</Text>
+                <Text style={styles.text}>{skill.name.length > 11 ? `${skill.name.slice(0, 11)}...` : skill.name}</Text>
+                <Text style={styles.text}>{skill.goal.length > 11 ? `${skill.goal.slice(0, 11)}...` : skill.goal}</Text>
                 <Text style={styles.text}>Time: {skill.timeInvested.toFixed(2)}</Text>
             </View>
         </View>

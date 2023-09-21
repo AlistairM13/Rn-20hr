@@ -1,8 +1,9 @@
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native'
+import { ActivityIndicator, Button, StyleSheet, Text, TextInput, View } from 'react-native'
 import { useState } from 'react'
 import { z } from 'zod'
 import { loginUser } from '../../api/api'
 import useAppStore from '../../store/appStore'
+import { COLORS } from '../../constants/styles'
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -15,7 +16,7 @@ export default function Login({ navigation }) {
 
 
   const [loginData, setLoginData] = useState({ email: '', password: '' })
-
+  const [isLoading, setIsLoading] = useState()
   function updateForm(fieldName, text) {
     setErrors(prev => ({ ...prev, [fieldName]: '' }))
     setLoginData(prev => ({ ...prev, [fieldName]: text }))
@@ -23,9 +24,11 @@ export default function Login({ navigation }) {
 
   const login = async () => {
     try {
+      setIsLoading(true)
       loginSchema.parse(loginData)
       const loginResponse = await loginUser({ ...loginData })
       const token = "Bearer " + loginResponse.token
+      setIsLoading(false)
       setToken(token)
       navigation.replace('Home')
     } catch (err) {
@@ -42,23 +45,35 @@ export default function Login({ navigation }) {
     }
   }
   return (
-    <View style={{ padding: 8 }}>
-      <TextInput style={styles.textInput} placeholder="Enter your email" value={loginData.email} onChangeText={text => updateForm("email", text)} />
-      {errors.email && <Text>{errors.email}</Text>}
-      <TextInput style={styles.textInput} placeholder="Enter your password" value={loginData.password} onChangeText={text => updateForm("password", text)} />
-      {errors.password && <Text>{errors.password}</Text>}
-      <Text style={{ paddingVertical: 16 }} onPress={() => navigation.replace('SignUp')}>Don't have an account? <Text style={{ fontSize: 16, fontWeight: "600" }}>Signup!</Text></Text>
-      <Button title='login' onPress={login} />
+    <View style={styles.container}>
+
+      <TextInput placeholderTextColor={'#999'} style={styles.textInput} placeholder="Enter your email" value={loginData.email} onChangeText={text => updateForm("email", text)} />
+      {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+      <TextInput placeholderTextColor={'#999'} style={styles.textInput} placeholder="Enter your password" value={loginData.password} onChangeText={text => updateForm("password", text)} />
+      {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+      <Text style={{ paddingVertical: 16, color: 'black' }} onPress={() => navigation.replace('SignUp')}>Don't have an account? <Text style={{ fontSize: 16, fontWeight: "600" }}>Signup!</Text></Text>
+      {!isLoading && <Button title='login' onPress={login} />}
+      {isLoading && <ActivityIndicator size="large" color={COLORS.blue} />}
     </View>
   )
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 8,
+    backgroundColor: COLORS.bgGray
+  },
   textInput: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#333',
     borderRadius: 5,
     padding: 10,
-    marginTop: 10
+    marginTop: 10,
+    color: 'black'
+  },
+  errorText: {
+    color: COLORS.red
   }
 })
